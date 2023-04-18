@@ -7,16 +7,22 @@ import {
   CardContent,
 } from "@mui/material";
 import InfoBox from "./InfoBox";
-import Map from "./Map";
+import Map from "./Map.js";
 import Table from "./Table";
 import { sortData } from "./util";
+import LineGraph from "./LineGraph";
 import "./App.css";
+import "leaflet/dist/leaflet.css";
 
 function App() {
   const [countries, setCountries] = useState([]);
   const [country, setCountry] = useState("worldwide");
   const [countryInfo, setCountryInfo] = useState({});
   const [tableData, setTableData] = useState([]);
+  const [casesType, setCasesType] = useState("cases");
+  const [mapCenter, setMapCenter] = useState({ lat: 34.80746, lng: -40.4796 });
+  const [mapZoom, setMapZoom] = useState(3);
+  const [mapCountries, setMapCountries] = useState([]);
 
   useEffect(() => {
     fetch("https://disease.sh/v3/covid-19/all")
@@ -37,6 +43,7 @@ function App() {
           }));
 
           const sortedData = sortData(data);
+          setMapCountries(data);
           setTableData(sortedData);
           setCountries(countries);
         });
@@ -49,7 +56,7 @@ function App() {
     setCountry(countryCode);
 
     const url =
-      countryCode == "worldwide"
+      countryCode === "worldwide"
         ? "https://disease.sh/v3/covid-19/all"
         : `https://disease.sh/v3/covid-19/countries/${countryCode}`;
 
@@ -58,10 +65,13 @@ function App() {
       .then((data) => {
         setCountry(countryCode);
         setCountryInfo(data);
+        setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+        setMapZoom(4);
       });
   };
 
   console.log("Contry infor >>> ", countryInfo);
+
   return (
     <div className="app">
       <div className="app__left">
@@ -85,7 +95,6 @@ function App() {
             </Select>
           </FormControl>
         </div>
-
         <div className="app__stats">
           <InfoBox
             title="Conronavirus Cases"
@@ -94,7 +103,7 @@ function App() {
           />
           <InfoBox
             title="Recovered"
-            total={countryInfo.recoverd}
+            total={countryInfo.recovered}
             cases={countryInfo.todayRecovered}
           />
           <InfoBox
@@ -103,7 +112,13 @@ function App() {
             cases={countryInfo.todayDeaths}
           />
         </div>
-        <Map />
+        <Map
+          countries={mapCountries}
+          centre={mapCenter}
+          zoom={mapZoom}
+          casesType={casesType}
+        />
+        ;
       </div>
 
       <Card className="app__right">
@@ -121,31 +136,3 @@ function App() {
 }
 
 export default App;
-
-{
-  /* Header */
-}
-{
-  /* Title + Select input dropdown field */
-}
-
-{
-  /* Info boxes */
-}
-{
-  /* Info boxes */
-}
-{
-  /* Info boxes */
-}
-
-{
-  /* Table */
-}
-{
-  /* Graph */
-}
-
-{
-  /* Map */
-}
