@@ -101,11 +101,10 @@
 // }
 
 // export default LineGraph;
-
+import { Chart as ChartJS } from "chart.js/auto";
 import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import numeral from "numeral";
-import { Chart as ChartJS } from "chart.js/auto";
 
 const options = {
   legend: {
@@ -168,7 +167,7 @@ const buildChartData = (data, casesType) => {
   return chartData;
 };
 
-function LineGraph({ casesType = "cases" }) {
+function LineGraph({ casesType }) {
   const [data, setData] = useState({});
 
   useEffect(() => {
